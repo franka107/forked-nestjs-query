@@ -6,7 +6,7 @@
   "scripts": {
     "co": "sui-mono commit",
     "build": "lerna run build",
-    "lerna:pub": "lerna publish from-git",
+    "lerna:pub": "lerna publish --no-private",
     "lerna:version": "lerna version",
     "release": "npm run build && npm run lerna:version && npm run lerna:pub"
   },
