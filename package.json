@@ -1,0 +1,18 @@
+{
+  "name": "forked-nestjs-query",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "co": "sui-mono commit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@s-ui/mono": "^2.34.0"
+  }
+}
