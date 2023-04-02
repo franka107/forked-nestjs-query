@@ -2,11 +2,10 @@
   "name": "forked-nestjs-query",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "co": "sui-mono commit",
     "build": "lerna run build",
-    "lerna:pub": "lerna publish --no-private",
+    "lerna:pub": "lerna publish from-git",
     "lerna:version": "lerna version",
     "release": "npm run build && npm run lerna:version && npm run lerna:pub"
   },

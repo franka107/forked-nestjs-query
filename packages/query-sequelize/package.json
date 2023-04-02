@@ -53,5 +53,6 @@
   },
   "bugs": {
     "url": "https://github.com/doug-martin/nestjs-query/issues"
-  }
+  },
+  "gitHead": "f01ca46226a5e214b820aadda068e7fb0398c836"
 }
