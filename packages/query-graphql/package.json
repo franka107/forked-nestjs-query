@@ -1,6 +1,6 @@
 {
   "name": "@franka107-nestjs-query/query-graphql",
-  "version": "1.0.5",
+  "version": "1.0.9",
   "description": "Nestjs graphql query adapter",
   "author": "doug-martin <doug@dougamartin.com>",
   "homepage": "https://github.com/doug-martin/nestjs-query#readme",
