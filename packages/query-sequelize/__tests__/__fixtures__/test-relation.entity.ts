@@ -1,7 +1,18 @@
-import { AssemblerDeserializer, AssemblerSerializer } from '@nestjs-query/core';
-import { Table, Model, BelongsToMany, BelongsTo, PrimaryKey, Column, ForeignKey } from 'sequelize-typescript';
-import { TestEntityTestRelationEntity } from './test-entity-test-relation.entity';
-import { TestEntity } from './test.entity';
+import {
+  AssemblerDeserializer,
+  AssemblerSerializer,
+} from "@franka107-nestjs-query/core";
+import {
+  Table,
+  Model,
+  BelongsToMany,
+  BelongsTo,
+  PrimaryKey,
+  Column,
+  ForeignKey,
+} from "sequelize-typescript";
+import { TestEntityTestRelationEntity } from "./test-entity-test-relation.entity";
+import { TestEntity } from "./test.entity";
 
 @AssemblerSerializer((instance: TestRelation) => instance.get({ plain: true }))
 // eslint-disable-next-line @typescript-eslint/no-use-before-define,@typescript-eslint/ban-types
@@ -12,19 +23,19 @@ export class TestRelation extends Model<TestRelation, Partial<TestRelation>> {
   @Column
   testRelationPk!: string;
 
-  @Column({ field: 'relation_name' })
+  @Column({ field: "relation_name" })
   relationName!: string;
 
   @ForeignKey(() => TestEntity)
-  @Column({ field: 'test_entity_id' })
+  @Column({ field: "test_entity_id" })
   testEntityId?: string;
 
-  @BelongsTo(() => TestEntity, 'testEntityId')
+  @BelongsTo(() => TestEntity, "testEntityId")
   testEntity?: TestEntity;
 
   @BelongsToMany(() => TestEntity, () => TestEntityTestRelationEntity)
   manyTestEntities?: TestEntity[];
 
-  @BelongsTo(() => TestEntity, 'oneTestEntityId')
+  @BelongsTo(() => TestEntity, "oneTestEntityId")
   oneTestEntity?: TestEntity;
 }

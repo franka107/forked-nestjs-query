@@ -1,4 +1,11 @@
-import { Filter, Paging, Query, SortField, getFilterFields, AggregateQuery } from '@nestjs-query/core';
+import {
+  Filter,
+  Paging,
+  Query,
+  SortField,
+  getFilterFields,
+  AggregateQuery,
+} from "@franka107-nestjs-query/core";
 import {
   DeleteQueryBuilder,
   QueryBuilder,
@@ -7,11 +14,11 @@ import {
   UpdateQueryBuilder,
   WhereExpression,
   EntityMetadata,
-} from 'typeorm';
-import { SoftDeleteQueryBuilder } from 'typeorm/query-builder/SoftDeleteQueryBuilder';
-import { AggregateBuilder } from './aggregate.builder';
-import { WhereBuilder } from './where.builder';
-import merge from 'lodash.merge';
+} from "typeorm";
+import { SoftDeleteQueryBuilder } from "typeorm/query-builder/SoftDeleteQueryBuilder";
+import { AggregateBuilder } from "./aggregate.builder";
+import { WhereBuilder } from "./where.builder";
+import merge from "lodash.merge";
 
 /**
  * @internal
@@ -19,7 +26,11 @@ import merge from 'lodash.merge';
  * Interface that for Typeorm query builders that are sortable.
  */
 interface Sortable<Entity> extends QueryBuilder<Entity> {
-  addOrderBy(sort: string, order?: 'ASC' | 'DESC', nulls?: 'NULLS FIRST' | 'NULLS LAST'): this;
+  addOrderBy(
+    sort: string,
+    order?: "ASC" | "DESC",
+    nulls?: "NULLS FIRST" | "NULLS LAST"
+  ): this;
 }
 
 interface Groupable<Entity> extends QueryBuilder<Entity> {
@@ -56,7 +67,7 @@ export class FilterQueryBuilder<Entity> {
   constructor(
     readonly repo: Repository<Entity>,
     readonly whereBuilder: WhereBuilder<Entity> = new WhereBuilder<Entity>(),
-    readonly aggregateBuilder: AggregateBuilder<Entity> = new AggregateBuilder<Entity>(),
+    readonly aggregateBuilder: AggregateBuilder<Entity> = new AggregateBuilder<Entity>()
   ) {}
 
   /**
@@ -68,7 +79,10 @@ export class FilterQueryBuilder<Entity> {
     const hasRelations = this.filterHasRelations(query.filter);
     let qb = this.createQueryBuilder();
     qb = hasRelations
-      ? this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsRecursive(this.repo.metadata, query.filter))
+      ? this.applyRelationJoinsRecursive(
+          qb,
+          this.getReferencedRelationsRecursive(this.repo.metadata, query.filter)
+        )
       : qb;
     qb = this.applyFilter(qb, query.filter, qb.alias);
     qb = this.applySorting(qb, query.sorting, qb.alias);
@@ -76,11 +90,17 @@ export class FilterQueryBuilder<Entity> {
     return qb;
   }
 
-  selectById(id: string | number | (string | number)[], query: Query<Entity>): SelectQueryBuilder<Entity> {
+  selectById(
+    id: string | number | (string | number)[],
+    query: Query<Entity>
+  ): SelectQueryBuilder<Entity> {
     const hasRelations = this.filterHasRelations(query.filter);
     let qb = this.createQueryBuilder();
     qb = hasRelations
-      ? this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsRecursive(this.repo.metadata, query.filter))
+      ? this.applyRelationJoinsRecursive(
+          qb,
+          this.getReferencedRelationsRecursive(this.repo.metadata, query.filter)
+        )
       : qb;
     qb = qb.andWhereInIds(id);
     qb = this.applyFilter(qb, query.filter, qb.alias);
@@ -89,7 +109,10 @@ export class FilterQueryBuilder<Entity> {
     return qb;
   }
 
-  aggregate(query: Query<Entity>, aggregate: AggregateQuery<Entity>): SelectQueryBuilder<Entity> {
+  aggregate(
+    query: Query<Entity>,
+    aggregate: AggregateQuery<Entity>
+  ): SelectQueryBuilder<Entity> {
     let qb = this.createQueryBuilder();
     qb = this.applyAggregate(qb, aggregate, qb.alias);
     qb = this.applyFilter(qb, query.filter, qb.alias);
@@ -104,7 +127,10 @@ export class FilterQueryBuilder<Entity> {
    * @param query - the query to apply.
    */
   delete(query: Query<Entity>): DeleteQueryBuilder<Entity> {
-    return this.applyFilter(this.repo.createQueryBuilder().delete(), query.filter);
+    return this.applyFilter(
+      this.repo.createQueryBuilder().delete(),
+      query.filter
+    );
   }
 
   /**
@@ -114,8 +140,10 @@ export class FilterQueryBuilder<Entity> {
    */
   softDelete(query: Query<Entity>): SoftDeleteQueryBuilder<Entity> {
     return this.applyFilter(
-      this.repo.createQueryBuilder().softDelete() as SoftDeleteQueryBuilder<Entity>,
-      query.filter,
+      this.repo
+        .createQueryBuilder()
+        .softDelete() as SoftDeleteQueryBuilder<Entity>,
+      query.filter
     );
   }
 
@@ -125,7 +153,10 @@ export class FilterQueryBuilder<Entity> {
    * @param query - the query to apply.
    */
   update(query: Query<Entity>): UpdateQueryBuilder<Entity> {
-    const qb = this.applyFilter(this.repo.createQueryBuilder().update(), query.filter);
+    const qb = this.applyFilter(
+      this.repo.createQueryBuilder().update(),
+      query.filter
+    );
     return this.applySorting(qb, query.sorting);
   }
 
@@ -135,7 +166,11 @@ export class FilterQueryBuilder<Entity> {
    * @param paging - the Paging options.
    * @param useSkipTake - if skip/take should be used instead of limit/offset.
    */
-  applyPaging<P extends Pageable<Entity>>(qb: P, paging?: Paging, useSkipTake?: boolean): P {
+  applyPaging<P extends Pageable<Entity>>(
+    qb: P,
+    paging?: Paging,
+    useSkipTake?: boolean
+  ): P {
     if (!paging) {
       return qb;
     }
@@ -154,7 +189,11 @@ export class FilterQueryBuilder<Entity> {
    * @param aggregate - the aggregates to select.
    * @param alias - optional alias to use to qualify an identifier
    */
-  applyAggregate<Qb extends SelectQueryBuilder<Entity>>(qb: Qb, aggregate: AggregateQuery<Entity>, alias?: string): Qb {
+  applyAggregate<Qb extends SelectQueryBuilder<Entity>>(
+    qb: Qb,
+    aggregate: AggregateQuery<Entity>,
+    alias?: string
+  ): Qb {
     return this.aggregateBuilder.build(qb, aggregate, alias);
   }
 
@@ -165,11 +204,20 @@ export class FilterQueryBuilder<Entity> {
    * @param filter - the filter.
    * @param alias - optional alias to use to qualify an identifier
    */
-  applyFilter<Where extends WhereExpression>(qb: Where, filter?: Filter<Entity>, alias?: string): Where {
+  applyFilter<Where extends WhereExpression>(
+    qb: Where,
+    filter?: Filter<Entity>,
+    alias?: string
+  ): Where {
     if (!filter) {
       return qb;
     }
-    return this.whereBuilder.build(qb, filter, this.getReferencedRelationsRecursive(this.repo.metadata, filter), alias);
+    return this.whereBuilder.build(
+      qb,
+      filter,
+      this.getReferencedRelationsRecursive(this.repo.metadata, filter),
+      alias
+    );
   }
 
   /**
@@ -178,7 +226,11 @@ export class FilterQueryBuilder<Entity> {
    * @param sorts - an array of SortFields to create the ORDER BY clause.
    * @param alias - optional alias to use to qualify an identifier
    */
-  applySorting<T extends Sortable<Entity>>(qb: T, sorts?: SortField<Entity>[], alias?: string): T {
+  applySorting<T extends Sortable<Entity>>(
+    qb: T,
+    sorts?: SortField<Entity>[],
+    alias?: string
+  ): T {
     if (!sorts) {
       return qb;
     }
@@ -188,7 +240,11 @@ export class FilterQueryBuilder<Entity> {
     }, qb);
   }
 
-  applyGroupBy<T extends Groupable<Entity>>(qb: T, groupBy?: (keyof Entity)[], alias?: string): T {
+  applyGroupBy<T extends Groupable<Entity>>(
+    qb: T,
+    groupBy?: (keyof Entity)[],
+    alias?: string
+  ): T {
     if (!groupBy) {
       return qb;
     }
@@ -198,13 +254,17 @@ export class FilterQueryBuilder<Entity> {
     }, qb);
   }
 
-  applyAggregateSorting<T extends Sortable<Entity>>(qb: T, groupBy?: (keyof Entity)[], alias?: string): T {
+  applyAggregateSorting<T extends Sortable<Entity>>(
+    qb: T,
+    groupBy?: (keyof Entity)[],
+    alias?: string
+  ): T {
     if (!groupBy) {
       return qb;
     }
     return groupBy.reduce((prevQb, field) => {
       const col = alias ? `${alias}.${field as string}` : `${field as string}`;
-      return prevQb.addOrderBy(col, 'ASC');
+      return prevQb.addOrderBy(col, "ASC");
     }, qb);
   }
 
@@ -226,7 +286,7 @@ export class FilterQueryBuilder<Entity> {
   applyRelationJoinsRecursive(
     qb: SelectQueryBuilder<Entity>,
     relationsMap?: NestedRecord,
-    alias?: string,
+    alias?: string
   ): SelectQueryBuilder<Entity> {
     if (!relationsMap) {
       return qb;
@@ -236,7 +296,7 @@ export class FilterQueryBuilder<Entity> {
       return this.applyRelationJoinsRecursive(
         rqb.leftJoin(`${alias ?? rqb.alias}.${relation}`, relation),
         relationsMap[relation],
-        relation,
+        relation
       );
     }, qb);
   }
@@ -261,22 +321,35 @@ export class FilterQueryBuilder<Entity> {
     return referencedFields.filter((f) => relationNames.includes(f));
   }
 
-  getReferencedRelationsRecursive(metadata: EntityMetadata, filter: Filter<unknown> = {}): NestedRecord {
-    const referencedFields = Array.from(new Set(Object.keys(filter) as (keyof Filter<unknown>)[]));
+  getReferencedRelationsRecursive(
+    metadata: EntityMetadata,
+    filter: Filter<unknown> = {}
+  ): NestedRecord {
+    const referencedFields = Array.from(
+      new Set(Object.keys(filter) as (keyof Filter<unknown>)[])
+    );
     return referencedFields.reduce((prev, curr) => {
       const currFilterValue = filter[curr];
-      if ((curr === 'and' || curr === 'or') && currFilterValue) {
+      if ((curr === "and" || curr === "or") && currFilterValue) {
         for (const subFilter of currFilterValue) {
-          prev = merge(prev, this.getReferencedRelationsRecursive(metadata, subFilter));
+          prev = merge(
+            prev,
+            this.getReferencedRelationsRecursive(metadata, subFilter)
+          );
         }
       }
-      const referencedRelation = metadata.relations.find((r) => r.propertyName === curr);
+      const referencedRelation = metadata.relations.find(
+        (r) => r.propertyName === curr
+      );
       if (!referencedRelation) return prev;
       return {
         ...prev,
         [curr]: merge(
           (prev as NestedRecord)[curr],
-          this.getReferencedRelationsRecursive(referencedRelation.inverseEntityMetadata, currFilterValue),
+          this.getReferencedRelationsRecursive(
+            referencedRelation.inverseEntityMetadata,
+            currFilterValue
+          )
         ),
       };
     }, {});

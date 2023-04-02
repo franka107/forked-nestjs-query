@@ -1,5 +1,5 @@
-import { Paging, Query } from '@nestjs-query/core';
-import { OffsetConnectionType, PagerResult } from '../../interfaces';
+import { Paging, Query } from "@franka107-nestjs-query/core";
+import { OffsetConnectionType, PagerResult } from "../../interfaces";
 
 export type OffsetPagingOpts = Required<Paging>;
 
@@ -12,4 +12,5 @@ export interface QueryResults<DTO> {
   nodes: DTO[];
   hasExtraNode: boolean;
 }
-export type OffsetPagerResult<DTO> = PagerResult & Omit<OffsetConnectionType<DTO>, 'totalCount'>;
+export type OffsetPagerResult<DTO> = PagerResult &
+  Omit<OffsetConnectionType<DTO>, "totalCount">;

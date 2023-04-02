@@ -1,13 +1,15 @@
-import { Class } from '@nestjs-query/core';
-import { ArgsType, Field } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { Class } from "@franka107-nestjs-query/core";
+import { ArgsType, Field } from "@nestjs/graphql";
+import { Type } from "class-transformer";
+import { ValidateNested } from "class-validator";
 
 export interface SubscriptionArgsType<Input> {
   input?: Input;
 }
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
-export function SubscriptionArgsType<Input>(InputClass: Class<Input>): Class<SubscriptionArgsType<Input>> {
+export function SubscriptionArgsType<Input>(
+  InputClass: Class<Input>
+): Class<SubscriptionArgsType<Input>> {
   @ArgsType()
   class SubscriptionArgs implements SubscriptionArgsType<Input> {
     @Type(() => InputClass)

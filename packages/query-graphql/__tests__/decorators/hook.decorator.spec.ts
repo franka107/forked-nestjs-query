@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 // eslint-disable-next-line max-classes-per-file
-import { Class } from '@nestjs-query/core';
+import { Class } from "@franka107-nestjs-query/core";
 import {
   BeforeCreateMany,
   BeforeCreateOne,
@@ -11,32 +11,38 @@ import {
   BeforeQueryMany,
   BeforeFindOne,
   Hook,
-} from '../../src';
-import { getHookForType } from '../../src/decorators';
-import { createDefaultHook, HookTypes } from '../../src/hooks';
+} from "../../src";
+import { getHookForType } from "../../src/decorators";
+import { createDefaultHook, HookTypes } from "../../src/hooks";
 
-describe('hook decorators', () => {
-  describe('@BeforeCreateOne', () => {
-    it('should store the hook', () => {
+describe("hook decorators", () => {
+  describe("@BeforeCreateOne", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeCreateOne(hookFn)
       class Test {}
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeCreateOne(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeCreateOne(baseHookFn)
       class Base {}
@@ -45,11 +51,14 @@ describe('hook decorators', () => {
       @BeforeCreateOne(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeCreateOne(MockHook)
       class Test {}
@@ -57,28 +66,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeCreateMany', () => {
-    it('should store the hook', () => {
+  describe("@BeforeCreateMany", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeCreateMany(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeCreateMany(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeCreateMany(baseHookFn)
       class Base {}
@@ -87,11 +102,14 @@ describe('hook decorators', () => {
       @BeforeCreateMany(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_CREATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_CREATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeCreateMany(MockHook)
       class Test {}
@@ -99,26 +117,32 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeUpdateOne', () => {
-    it('should store the hook', () => {
+  describe("@BeforeUpdateOne", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeUpdateOne(hookFn)
       class Test {}
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeUpdateOne(hookFn)
       class Base {}
 
       class Test extends Base {}
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeUpdateOne(baseHookFn)
       class Base {}
@@ -127,11 +151,14 @@ describe('hook decorators', () => {
       @BeforeUpdateOne(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeUpdateOne(MockHook)
       class Test {}
@@ -139,28 +166,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeUpdateMany', () => {
-    it('should store the hook', () => {
+  describe("@BeforeUpdateMany", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeUpdateMany(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeUpdateMany(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeUpdateMany(baseHookFn)
       class Base {}
@@ -169,11 +202,14 @@ describe('hook decorators', () => {
       @BeforeUpdateMany(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_UPDATE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_UPDATE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeUpdateMany(MockHook)
       class Test {}
@@ -181,28 +217,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeDeleteOne', () => {
-    it('should store the hook', () => {
+  describe("@BeforeDeleteOne", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeDeleteOne(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeDeleteOne(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeDeleteOne(baseHookFn)
       class Base {}
@@ -211,11 +253,14 @@ describe('hook decorators', () => {
       @BeforeDeleteOne(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeDeleteOne(MockHook)
       class Test {}
@@ -223,28 +268,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeDeleteMany', () => {
-    it('should store the hook', () => {
+  describe("@BeforeDeleteMany", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeDeleteMany(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeDeleteMany(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeDeleteMany(baseHookFn)
       class Base {}
@@ -253,11 +304,14 @@ describe('hook decorators', () => {
       @BeforeDeleteMany(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_DELETE_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_DELETE_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeDeleteMany(MockHook)
       class Test {}
@@ -265,28 +319,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeQueryMany', () => {
-    it('should store the hook', () => {
+  describe("@BeforeQueryMany", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeQueryMany(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_QUERY_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_QUERY_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeQueryMany(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_QUERY_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_QUERY_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeQueryMany(baseHookFn)
       class Base {}
@@ -295,11 +355,14 @@ describe('hook decorators', () => {
       @BeforeQueryMany(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_QUERY_MANY, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_QUERY_MANY,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeQueryMany(MockHook)
       class Test {}
@@ -307,28 +370,34 @@ describe('hook decorators', () => {
     });
   });
 
-  describe('@BeforeFindOne', () => {
-    it('should store the hook', () => {
+  describe("@BeforeFindOne", () => {
+    it("should store the hook", () => {
       const hookFn = jest.fn();
       @BeforeFindOne(hookFn)
       class Test {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_FIND_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_FIND_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the base class', () => {
+    it("should return a hook from the base class", () => {
       const hookFn = jest.fn();
       @BeforeFindOne(hookFn)
       class Base {}
 
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_FIND_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_FIND_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(hookFn);
     });
 
-    it('should return a hook from the child class if there is a hook on both the base and child', () => {
+    it("should return a hook from the child class if there is a hook on both the base and child", () => {
       const baseHookFn = jest.fn();
       @BeforeFindOne(baseHookFn)
       class Base {}
@@ -337,11 +406,14 @@ describe('hook decorators', () => {
       @BeforeFindOne(childHookFn)
       class Test extends Base {}
 
-      const Stored: Class<Hook<any>> = getHookForType(HookTypes.BEFORE_FIND_ONE, Test)!;
+      const Stored: Class<Hook<any>> = getHookForType(
+        HookTypes.BEFORE_FIND_ONE,
+        Test
+      )!;
       expect(new Stored().run).toBe(childHookFn);
     });
 
-    it('should return the hook class', () => {
+    it("should return the hook class", () => {
       const MockHook = createDefaultHook(jest.fn());
       @BeforeFindOne(MockHook)
       class Test {}

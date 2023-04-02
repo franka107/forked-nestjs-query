@@ -1,11 +1,29 @@
 // eslint-disable-next-line max-classes-per-file
-import { Class, DeleteManyResponse, Filter, mergeFilter, QueryService } from '@nestjs-query/core';
-import omit from 'lodash.omit';
-import { Args, ArgsType, InputType, ObjectType, PartialType, Resolver } from '@nestjs/graphql';
-import { HookTypes } from '../hooks';
-import { DTONames, getDTONames } from '../common';
-import { EventType, getDTOEventName } from '../subscription';
-import { BaseServiceResolver, ResolverClass, ServiceResolver, SubscriptionResolverOpts } from './resolver.interface';
+import {
+  Class,
+  DeleteManyResponse,
+  Filter,
+  mergeFilter,
+  QueryService,
+} from "@franka107-nestjs-query/core";
+import omit from "lodash.omit";
+import {
+  Args,
+  ArgsType,
+  InputType,
+  ObjectType,
+  PartialType,
+  Resolver,
+} from "@nestjs/graphql";
+import { HookTypes } from "../hooks";
+import { DTONames, getDTONames } from "../common";
+import { EventType, getDTOEventName } from "../subscription";
+import {
+  BaseServiceResolver,
+  ResolverClass,
+  ServiceResolver,
+  SubscriptionResolverOpts,
+} from "./resolver.interface";
 import {
   DeleteManyInputType,
   DeleteManyResponseType,
@@ -13,11 +31,16 @@ import {
   MutationArgsType,
   SubscriptionArgsType,
   SubscriptionFilterInputType,
-} from '../types';
-import { MutationHookArgs, ResolverMutation, ResolverSubscription, AuthorizerFilter } from '../decorators';
-import { createSubscriptionFilter, getSubscriptionEventName } from './helpers';
-import { AuthorizerInterceptor, HookInterceptor } from '../interceptors';
-import { OperationGroup } from '../auth';
+} from "../types";
+import {
+  MutationHookArgs,
+  ResolverMutation,
+  ResolverSubscription,
+  AuthorizerFilter,
+} from "../decorators";
+import { createSubscriptionFilter, getSubscriptionEventName } from "./helpers";
+import { AuthorizerInterceptor, HookInterceptor } from "../interceptors";
+import { OperationGroup } from "../auth";
 
 export type DeletedEvent<DTO> = { [eventName: string]: DTO };
 export interface DeleteResolverOpts<DTO> extends SubscriptionResolverOpts {
@@ -31,24 +54,35 @@ export interface DeleteResolverOpts<DTO> extends SubscriptionResolverOpts {
   DeleteManyInput?: Class<DeleteManyInputType<DTO>>;
 }
 
-export interface DeleteResolver<DTO, QS extends QueryService<DTO, unknown, unknown>> extends ServiceResolver<DTO, QS> {
-  deleteOne(input: MutationArgsType<DeleteOneInputType>, authorizeFilter?: Filter<DTO>): Promise<Partial<DTO>>;
+export interface DeleteResolver<
+  DTO,
+  QS extends QueryService<DTO, unknown, unknown>
+> extends ServiceResolver<DTO, QS> {
+  deleteOne(
+    input: MutationArgsType<DeleteOneInputType>,
+    authorizeFilter?: Filter<DTO>
+  ): Promise<Partial<DTO>>;
 
   deleteMany(
     input: MutationArgsType<DeleteManyInputType<DTO>>,
-    authorizeFilter?: Filter<DTO>,
+    authorizeFilter?: Filter<DTO>
   ): Promise<DeleteManyResponse>;
 
   deletedOneSubscription(
     input?: SubscriptionArgsType<DTO>,
-    authorizeFilter?: Filter<DTO>,
+    authorizeFilter?: Filter<DTO>
   ): AsyncIterator<DeletedEvent<Partial<DTO>>>;
 
-  deletedManySubscription(authorizeFilter?: Filter<DTO>): AsyncIterator<DeletedEvent<DeleteManyResponse>>;
+  deletedManySubscription(
+    authorizeFilter?: Filter<DTO>
+  ): AsyncIterator<DeletedEvent<DeleteManyResponse>>;
 }
 
 /** @internal */
-const defaultDeleteManyInput = <DTO>(dtoNames: DTONames, DTOClass: Class<DTO>): Class<DeleteManyInputType<DTO>> => {
+const defaultDeleteManyInput = <DTO>(
+  dtoNames: DTONames,
+  DTOClass: Class<DTO>
+): Class<DeleteManyInputType<DTO>> => {
   const { pluralBaseName } = dtoNames;
   @InputType(`DeleteMany${pluralBaseName}Input`)
   class DM extends DeleteManyInputType(DTOClass) {}
@@ -56,7 +90,10 @@ const defaultDeleteManyInput = <DTO>(dtoNames: DTONames, DTOClass: Class<DTO>): 
 };
 
 /** @internal */
-const defaultDeleteOneInput = <DTO>(dtoNames: DTONames, DTOClass: Class<DTO>): Class<DeleteOneInputType> => {
+const defaultDeleteOneInput = <DTO>(
+  dtoNames: DTONames,
+  DTOClass: Class<DTO>
+): Class<DeleteOneInputType> => {
   const { baseName } = dtoNames;
   @InputType(`DeleteOne${baseName}Input`)
   class DM extends DeleteOneInputType(DTOClass) {}
@@ -68,13 +105,20 @@ const defaultDeleteOneInput = <DTO>(dtoNames: DTONames, DTOClass: Class<DTO>): C
  * Mixin to add `delete` graphql endpoints.
  */
 export const Deletable =
-  <DTO, QS extends QueryService<DTO, unknown, unknown>>(DTOClass: Class<DTO>, opts: DeleteResolverOpts<DTO>) =>
-  <B extends Class<ServiceResolver<DTO, QS>>>(BaseClass: B): Class<DeleteResolver<DTO, QS>> & B => {
+  <DTO, QS extends QueryService<DTO, unknown, unknown>>(
+    DTOClass: Class<DTO>,
+    opts: DeleteResolverOpts<DTO>
+  ) =>
+  <B extends Class<ServiceResolver<DTO, QS>>>(
+    BaseClass: B
+  ): Class<DeleteResolver<DTO, QS>> & B => {
     const dtoNames = getDTONames(DTOClass, opts);
     const { baseName, pluralBaseName } = dtoNames;
     const enableSubscriptions = opts.enableSubscriptions === true;
-    const enableOneSubscriptions = opts.one?.enableSubscriptions ?? enableSubscriptions;
-    const enableManySubscriptions = opts.many?.enableSubscriptions ?? enableSubscriptions;
+    const enableOneSubscriptions =
+      opts.one?.enableSubscriptions ?? enableSubscriptions;
+    const enableManySubscriptions =
+      opts.many?.enableSubscriptions ?? enableSubscriptions;
     const deletedOneEvent = getDTOEventName(EventType.DELETED_ONE, DTOClass);
     const deletedManyEvent = getDTOEventName(EventType.DELETED_MANY, DTOClass);
     const {
@@ -82,10 +126,18 @@ export const Deletable =
       DeleteManyInput = defaultDeleteManyInput(dtoNames, DTOClass),
     } = opts;
     const deleteOneMutationName = opts.one?.name ?? `deleteOne${baseName}`;
-    const deleteManyMutationName = opts.many?.name ?? `deleteMany${pluralBaseName}`;
+    const deleteManyMutationName =
+      opts.many?.name ?? `deleteMany${pluralBaseName}`;
     const DMR = DeleteManyResponseType();
 
-    const commonResolverOpts = omit(opts, 'dtoName', 'one', 'many', 'DeleteOneInput', 'DeleteManyInput');
+    const commonResolverOpts = omit(
+      opts,
+      "dtoName",
+      "one",
+      "many",
+      "DeleteOneInput",
+      "DeleteManyInput"
+    );
 
     @ObjectType(`${baseName}DeleteResponse`)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -105,7 +157,10 @@ export const Deletable =
     class DOSA extends SubscriptionArgsType(SI) {}
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const deleteOneSubscriptionFilter = createSubscriptionFilter(SI, deletedOneEvent);
+    const deleteOneSubscriptionFilter = createSubscriptionFilter(
+      SI,
+      deletedOneEvent
+    );
 
     @Resolver(() => DTOClass, { isAbstract: true })
     class DeleteResolverBase extends BaseClass {
@@ -113,8 +168,13 @@ export const Deletable =
         () => DeleteOneResponse,
         { name: deleteOneMutationName },
         commonResolverOpts,
-        { interceptors: [HookInterceptor(HookTypes.BEFORE_DELETE_ONE, DTOClass), AuthorizerInterceptor(DTOClass)] },
-        opts.one ?? {},
+        {
+          interceptors: [
+            HookInterceptor(HookTypes.BEFORE_DELETE_ONE, DTOClass),
+            AuthorizerInterceptor(DTOClass),
+          ],
+        },
+        opts.one ?? {}
       )
       async deleteOne(
         @MutationHookArgs() input: DO,
@@ -122,9 +182,11 @@ export const Deletable =
           operationGroup: OperationGroup.DELETE,
           many: false,
         })
-        authorizeFilter?: Filter<DTO>,
+        authorizeFilter?: Filter<DTO>
       ): Promise<Partial<DTO>> {
-        const deletedResponse = await this.service.deleteOne(input.input.id, { filter: authorizeFilter ?? {} });
+        const deletedResponse = await this.service.deleteOne(input.input.id, {
+          filter: authorizeFilter ?? {},
+        });
         if (enableOneSubscriptions) {
           await this.publishDeletedOneEvent(deletedResponse, authorizeFilter);
         }
@@ -135,8 +197,13 @@ export const Deletable =
         () => DMR,
         { name: deleteManyMutationName },
         commonResolverOpts,
-        { interceptors: [HookInterceptor(HookTypes.BEFORE_DELETE_MANY, DTOClass), AuthorizerInterceptor(DTOClass)] },
-        opts.many ?? {},
+        {
+          interceptors: [
+            HookInterceptor(HookTypes.BEFORE_DELETE_MANY, DTOClass),
+            AuthorizerInterceptor(DTOClass),
+          ],
+        },
+        opts.many ?? {}
       )
       async deleteMany(
         @MutationHookArgs() input: DM,
@@ -144,27 +211,42 @@ export const Deletable =
           operationGroup: OperationGroup.DELETE,
           many: true,
         })
-        authorizeFilter?: Filter<DTO>,
+        authorizeFilter?: Filter<DTO>
       ): Promise<DeleteManyResponse> {
         const deleteManyResponse = await this.service.deleteMany(
-          mergeFilter(input.input.filter, authorizeFilter ?? {}),
+          mergeFilter(input.input.filter, authorizeFilter ?? {})
         );
         if (enableManySubscriptions) {
-          await this.publishDeletedManyEvent(deleteManyResponse, authorizeFilter);
+          await this.publishDeletedManyEvent(
+            deleteManyResponse,
+            authorizeFilter
+          );
         }
         return deleteManyResponse;
       }
 
-      async publishDeletedOneEvent(dto: DeleteOneResponse, authorizeFilter?: Filter<DTO>): Promise<void> {
+      async publishDeletedOneEvent(
+        dto: DeleteOneResponse,
+        authorizeFilter?: Filter<DTO>
+      ): Promise<void> {
         if (this.pubSub) {
-          const eventName = getSubscriptionEventName(deletedOneEvent, authorizeFilter);
+          const eventName = getSubscriptionEventName(
+            deletedOneEvent,
+            authorizeFilter
+          );
           await this.pubSub.publish(eventName, { [deletedOneEvent]: dto });
         }
       }
 
-      async publishDeletedManyEvent(dmr: DeleteManyResponse, authorizeFilter?: Filter<DTO>): Promise<void> {
+      async publishDeletedManyEvent(
+        dmr: DeleteManyResponse,
+        authorizeFilter?: Filter<DTO>
+      ): Promise<void> {
         if (this.pubSub) {
-          const eventName = getSubscriptionEventName(deletedManyEvent, authorizeFilter);
+          const eventName = getSubscriptionEventName(
+            deletedManyEvent,
+            authorizeFilter
+          );
           await this.pubSub.publish(eventName, { [deletedManyEvent]: dmr });
         }
       }
@@ -175,33 +257,47 @@ export const Deletable =
         commonResolverOpts,
         {
           enableSubscriptions: enableOneSubscriptions,
-        },
+        }
       )
       // input required so graphql subscription filtering will work.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       deletedOneSubscription(
         @Args() input?: DOSA,
-        @AuthorizerFilter({ operationGroup: OperationGroup.DELETE, many: false })
-        authorizeFilter?: Filter<DTO>,
+        @AuthorizerFilter({
+          operationGroup: OperationGroup.DELETE,
+          many: false,
+        })
+        authorizeFilter?: Filter<DTO>
       ): AsyncIterator<DeletedEvent<DeleteOneResponse>> {
         if (!enableOneSubscriptions || !this.pubSub) {
           throw new Error(`Unable to subscribe to ${deletedOneEvent}`);
         }
-        const eventName = getSubscriptionEventName(deletedOneEvent, authorizeFilter);
+        const eventName = getSubscriptionEventName(
+          deletedOneEvent,
+          authorizeFilter
+        );
         return this.pubSub.asyncIterator(eventName);
       }
 
-      @ResolverSubscription(() => DMR, { name: deletedManyEvent }, commonResolverOpts, {
-        enableSubscriptions: enableManySubscriptions,
-      })
+      @ResolverSubscription(
+        () => DMR,
+        { name: deletedManyEvent },
+        commonResolverOpts,
+        {
+          enableSubscriptions: enableManySubscriptions,
+        }
+      )
       deletedManySubscription(
         @AuthorizerFilter({ operationGroup: OperationGroup.DELETE, many: true })
-        authorizeFilter?: Filter<DTO>,
+        authorizeFilter?: Filter<DTO>
       ): AsyncIterator<DeletedEvent<DeleteManyResponse>> {
         if (!enableManySubscriptions || !this.pubSub) {
           throw new Error(`Unable to subscribe to ${deletedManyEvent}`);
         }
-        const eventName = getSubscriptionEventName(deletedManyEvent, authorizeFilter);
+        const eventName = getSubscriptionEventName(
+          deletedManyEvent,
+          authorizeFilter
+        );
         return this.pubSub.asyncIterator(eventName);
       }
     }
@@ -210,8 +306,13 @@ export const Deletable =
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
 export const DeleteResolver = <
   DTO,
-  QS extends QueryService<DTO, unknown, unknown> = QueryService<DTO, unknown, unknown>,
+  QS extends QueryService<DTO, unknown, unknown> = QueryService<
+    DTO,
+    unknown,
+    unknown
+  >
 >(
   DTOClass: Class<DTO>,
-  opts: DeleteResolverOpts<DTO> = {},
-): ResolverClass<DTO, QS, DeleteResolver<DTO, QS>> => Deletable<DTO, QS>(DTOClass, opts)(BaseServiceResolver);
+  opts: DeleteResolverOpts<DTO> = {}
+): ResolverClass<DTO, QS, DeleteResolver<DTO, QS>> =>
+  Deletable<DTO, QS>(DTOClass, opts)(BaseServiceResolver);

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as nestGraphql from '@nestjs/graphql';
-import { QueryOptions, ReturnTypeFunc } from '@nestjs/graphql';
-import { Class } from '@nestjs-query/core';
-import * as resolverDecorator from '../../src/decorators/resolver-method.decorator';
-import { ResolverQuery } from '../../src/decorators';
+import * as nestGraphql from "@nestjs/graphql";
+import { QueryOptions, ReturnTypeFunc } from "@nestjs/graphql";
+import { Class } from "@franka107-nestjs-query/core";
+import * as resolverDecorator from "../../src/decorators/resolver-method.decorator";
+import { ResolverQuery } from "../../src/decorators";
 
-describe('ResolverQuery decorator', (): void => {
-  const resolverMethodSpy = jest.spyOn(resolverDecorator, 'ResolverMethod');
-  const querySpy = jest.spyOn(nestGraphql, 'Query');
+describe("ResolverQuery decorator", (): void => {
+  const resolverMethodSpy = jest.spyOn(resolverDecorator, "ResolverMethod");
+  const querySpy = jest.spyOn(nestGraphql, "Query");
 
   beforeEach(() => jest.clearAllMocks());
 
@@ -25,24 +25,24 @@ describe('ResolverQuery decorator', (): void => {
     return TestResolver;
   }
 
-  it('should call Query with the correct mutation arguments', () => {
+  it("should call Query with the correct mutation arguments", () => {
     const opts: resolverDecorator.ResolverMethodOpts[] = [{}];
-    createTestResolver(() => Boolean, { name: 'test' }, ...opts);
+    createTestResolver(() => Boolean, { name: "test" }, ...opts);
 
     const [rt, ao] = querySpy.mock.calls[0]!;
     expect(rt()).toEqual(Boolean);
-    expect(ao).toEqual({ name: 'test' });
+    expect(ao).toEqual({ name: "test" });
   });
 
-  it('should call ResolverMethod with the correct options', () => {
+  it("should call ResolverMethod with the correct options", () => {
     const opts: resolverDecorator.ResolverMethodOpts[] = [{}];
-    createTestResolver(() => Boolean, { name: 'test' }, ...opts);
+    createTestResolver(() => Boolean, { name: "test" }, ...opts);
     expect(resolverMethodSpy).toHaveBeenNthCalledWith(1, ...opts);
   });
 
-  it('should not call ResolverMethod if disabled is true', () => {
+  it("should not call ResolverMethod if disabled is true", () => {
     const opts: resolverDecorator.ResolverMethodOpts[] = [{ disabled: true }];
-    createTestResolver(() => Boolean, { name: 'test' }, ...opts);
+    createTestResolver(() => Boolean, { name: "test" }, ...opts);
     expect(querySpy).toHaveBeenCalledTimes(0);
     expect(resolverMethodSpy).toHaveBeenCalledTimes(0);
   });

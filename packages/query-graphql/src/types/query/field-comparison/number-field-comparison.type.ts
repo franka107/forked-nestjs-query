@@ -1,14 +1,21 @@
-import { Class, FilterFieldComparison } from '@nestjs-query/core';
-import { Field, InputType } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
-import { IsUndefined } from '../../validators';
+import { Class, FilterFieldComparison } from "@franka107-nestjs-query/core";
+import { Field, InputType } from "@nestjs/graphql";
+import { Type } from "class-transformer";
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
+import { IsUndefined } from "../../validators";
 
 /** @internal */
 let numberFieldComparison: Class<FilterFieldComparison<number>>;
 
 /** @internal */
-export function getOrCreateNumberFieldComparison(): Class<FilterFieldComparison<number>> {
+export function getOrCreateNumberFieldComparison(): Class<
+  FilterFieldComparison<number>
+> {
   if (numberFieldComparison) {
     return numberFieldComparison;
   }

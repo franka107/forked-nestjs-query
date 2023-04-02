@@ -1,11 +1,11 @@
-import { Filter } from '@nestjs-query/core';
+import { Filter } from "@franka107-nestjs-query/core";
 
 export enum OperationGroup {
-  READ = 'read',
-  AGGREGATE = 'aggregate',
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
+  READ = "read",
+  AGGREGATE = "aggregate",
+  CREATE = "create",
+  UPDATE = "update",
+  DELETE = "delete",
 }
 
 export interface AuthorizationContext {
@@ -24,24 +24,30 @@ export interface AuthorizationContext {
 
 export interface CustomAuthorizer<DTO> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-explicit-any
-  authorize(context: any, authorizerContext: AuthorizationContext): Promise<Filter<DTO>>;
+  authorize(
+    context: any,
+    authorizerContext: AuthorizationContext
+  ): Promise<Filter<DTO>>;
 
   authorizeRelation?(
     relationName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     context: any,
-    authorizerContext: AuthorizationContext,
+    authorizerContext: AuthorizationContext
   ): Promise<Filter<unknown> | undefined>;
 }
 
 export interface Authorizer<DTO> extends CustomAuthorizer<DTO> {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/no-explicit-any
-  authorize(context: any, authorizerContext: AuthorizationContext): Promise<Filter<DTO>>;
+  authorize(
+    context: any,
+    authorizerContext: AuthorizationContext
+  ): Promise<Filter<DTO>>;
 
   authorizeRelation(
     relationName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     context: any,
-    authorizerContext: AuthorizationContext,
+    authorizerContext: AuthorizationContext
   ): Promise<Filter<unknown | undefined>>;
 }

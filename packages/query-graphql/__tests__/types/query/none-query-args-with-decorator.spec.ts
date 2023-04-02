@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
-import { SortDirection } from '@nestjs-query/core';
+import { SortDirection } from "@franka107-nestjs-query/core";
 import {
   Args,
   ArgsType,
@@ -11,20 +11,25 @@ import {
   ObjectType,
   Query,
   Resolver,
-} from '@nestjs/graphql';
-import { FilterableField, PagingStrategies, QueryArgsType, QueryOptions } from '../../../src';
-import { generateSchema } from '../../__fixtures__';
+} from "@nestjs/graphql";
+import {
+  FilterableField,
+  PagingStrategies,
+  QueryArgsType,
+  QueryOptions,
+} from "../../../src";
+import { generateSchema } from "../../__fixtures__";
 
-describe('QueryArgsType with decorator options', (): void => {
+describe("QueryArgsType with decorator options", (): void => {
   afterEach(() => jest.clearAllMocks());
 
-  @ObjectType('NoPagingQueryOptionsDTO')
+  @ObjectType("NoPagingQueryOptionsDTO")
   @QueryOptions({
     pagingStrategy: PagingStrategies.NONE,
     defaultResultSize: 2,
     maxResultsSize: 5,
     defaultFilter: { booleanField: { is: true } },
-    defaultSort: [{ field: 'booleanField', direction: SortDirection.DESC }],
+    defaultSort: [{ field: "booleanField", direction: SortDirection.DESC }],
   })
   class TestDto {
     @FilterableField(() => ID)
@@ -76,21 +81,23 @@ describe('QueryArgsType with decorator options', (): void => {
     dateOptional?: Date;
   }
 
-  describe('no paging query args', () => {
-    describe('options', () => {
+  describe("no paging query args", () => {
+    describe("options", () => {
       @ArgsType()
       class NoPagingQueryOptionsArgs extends QueryArgsType(TestDto) {}
 
-      it('allow apply the options to the generated SDL', async () => {
+      it("allow apply the options to the generated SDL", async () => {
         @Resolver()
         class TestNoPagingQueryOptionsDecoratorResolver {
           @Query(() => String)
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           test(@Args() query: NoPagingQueryOptionsArgs): string {
-            return 'hello';
+            return "hello";
           }
         }
-        const schema = await generateSchema([TestNoPagingQueryOptionsDecoratorResolver]);
+        const schema = await generateSchema([
+          TestNoPagingQueryOptionsDecoratorResolver,
+        ]);
         expect(schema).toMatchSnapshot();
       });
     });

@@ -1,21 +1,38 @@
-import { AggregateQuery, Class, QueryService, Filter, AggregateResponse } from '@nestjs-query/core';
-import { NestjsQueryDataloader } from './relations.loader';
+import {
+  AggregateQuery,
+  Class,
+  QueryService,
+  Filter,
+  AggregateResponse,
+} from "@franka107-nestjs-query/core";
+import { NestjsQueryDataloader } from "./relations.loader";
 
 type AggregateRelationsArgs<DTO, Relation> = {
   dto: DTO;
   filter: Filter<Relation>;
   aggregate: AggregateQuery<Relation>;
 };
-type AggregateRelationsMap<DTO, Relation> = Map<string, (AggregateRelationsArgs<DTO, Relation> & { index: number })[]>;
+type AggregateRelationsMap<DTO, Relation> = Map<
+  string,
+  (AggregateRelationsArgs<DTO, Relation> & { index: number })[]
+>;
 
 export class AggregateRelationsLoader<DTO, Relation>
-  implements NestjsQueryDataloader<DTO, AggregateRelationsArgs<DTO, Relation>, AggregateResponse<Relation> | Error>
+  implements
+    NestjsQueryDataloader<
+      DTO,
+      AggregateRelationsArgs<DTO, Relation>,
+      AggregateResponse<Relation> | Error
+    >
 {
-  constructor(readonly RelationDTO: Class<Relation>, readonly relationName: string) {}
+  constructor(
+    readonly RelationDTO: Class<Relation>,
+    readonly relationName: string
+  ) {}
 
   createLoader(service: QueryService<DTO, unknown, unknown>) {
     return async (
-      queryArgs: ReadonlyArray<AggregateRelationsArgs<DTO, Relation>>,
+      queryArgs: ReadonlyArray<AggregateRelationsArgs<DTO, Relation>>
     ): Promise<(AggregateResponse<Relation> | Error)[]> => {
       // group
       const queryMap = this.groupQueries(queryArgs);
@@ -25,7 +42,7 @@ export class AggregateRelationsLoader<DTO, Relation>
 
   private async loadResults(
     service: QueryService<DTO, unknown, unknown>,
-    queryRelationsMap: AggregateRelationsMap<DTO, Relation>,
+    queryRelationsMap: AggregateRelationsMap<DTO, Relation>
   ): Promise<AggregateResponse<Relation>[]> {
     const results: AggregateResponse<Relation>[] = [];
     await Promise.all(
@@ -37,23 +54,28 @@ export class AggregateRelationsLoader<DTO, Relation>
           this.relationName,
           dtos,
           filter,
-          aggregate,
+          aggregate
         );
-        const dtoRelationAggregates = dtos.map((dto) => aggregationResults.get(dto) ?? {});
+        const dtoRelationAggregates = dtos.map(
+          (dto) => aggregationResults.get(dto) ?? {}
+        );
         dtoRelationAggregates.forEach((relationAggregate, index) => {
           results[args[index].index] = relationAggregate;
         });
-      }),
+      })
     );
     return results;
   }
 
   private groupQueries(
-    queryArgs: ReadonlyArray<AggregateRelationsArgs<DTO, Relation>>,
+    queryArgs: ReadonlyArray<AggregateRelationsArgs<DTO, Relation>>
   ): AggregateRelationsMap<DTO, Relation> {
     // group
     return queryArgs.reduce((map, args, index) => {
-      const queryJson = JSON.stringify({ filter: args.filter, aggregate: args.aggregate });
+      const queryJson = JSON.stringify({
+        filter: args.filter,
+        aggregate: args.aggregate,
+      });
       if (!map.has(queryJson)) {
         map.set(queryJson, []);
       }

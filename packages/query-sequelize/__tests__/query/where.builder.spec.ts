@@ -1,21 +1,24 @@
-import { Filter } from '@nestjs-query/core';
-import { WhereOptions, Op } from 'sequelize';
-import { TestEntity } from '../__fixtures__/test.entity';
-import { WhereBuilder } from '../../src/query';
+import { Filter } from "@franka107-nestjs-query/core";
+import { WhereOptions, Op } from "sequelize";
+import { TestEntity } from "../__fixtures__/test.entity";
+import { WhereBuilder } from "../../src/query";
 
-describe('WhereBuilder', (): void => {
+describe("WhereBuilder", (): void => {
   const createWhereBuilder = () => new WhereBuilder<TestEntity>();
 
-  const expectWhereQuery = (filter: Filter<TestEntity>, expectedWhereOpts: WhereOptions<TestEntity>): void => {
+  const expectWhereQuery = (
+    filter: Filter<TestEntity>,
+    expectedWhereOpts: WhereOptions<TestEntity>
+  ): void => {
     const actual = createWhereBuilder().build(filter, new Map());
     expect(actual).toEqual(expectedWhereOpts);
   };
 
-  it('should accept a empty filter', (): void => {
+  it("should accept a empty filter", (): void => {
     expectWhereQuery({}, {});
   });
 
-  it('or multiple operators for a single field together', (): void => {
+  it("or multiple operators for a single field together", (): void => {
     expectWhereQuery(
       {
         numberType: { gt: 10, lt: 20, gte: 21, lte: 31 },
@@ -31,28 +34,31 @@ describe('WhereBuilder', (): void => {
             ],
           },
         ],
-      },
+      }
     );
   });
 
-  it('and multiple field comparisons together', (): void => {
+  it("and multiple field comparisons together", (): void => {
     expectWhereQuery(
       {
         numberType: { gt: 1 },
-        stringType: { like: 'foo%' },
+        stringType: { like: "foo%" },
       },
       {
         [Op.and]: [
           {
-            [Op.and]: [{ numberType: { [Op.gt]: 1 } }, { stringType: { [Op.like]: 'foo%' } }],
+            [Op.and]: [
+              { numberType: { [Op.gt]: 1 } },
+              { stringType: { [Op.like]: "foo%" } },
+            ],
           },
         ],
-      },
+      }
     );
   });
 
-  describe('and', (): void => {
-    it('and multiple expressions together', (): void => {
+  describe("and", (): void => {
+    it("and multiple expressions together", (): void => {
       expectWhereQuery(
         {
           and: [
@@ -69,28 +75,46 @@ describe('WhereBuilder', (): void => {
             { [Op.and]: [{ numberType: { [Op.gte]: 30 } }] },
             { [Op.and]: [{ numberType: { [Op.lte]: 40 } }] },
           ],
-        },
+        }
       );
     });
 
-    it('and multiple filters together with multiple fields', (): void => {
+    it("and multiple filters together with multiple fields", (): void => {
       expectWhereQuery(
         {
           and: [
-            { numberType: { gt: 10 }, stringType: { like: 'foo%' } },
-            { numberType: { lt: 20 }, stringType: { like: '%bar' } },
+            { numberType: { gt: 10 }, stringType: { like: "foo%" } },
+            { numberType: { lt: 20 }, stringType: { like: "%bar" } },
           ],
         },
         {
           [Op.and]: [
-            { [Op.and]: [{ [Op.and]: [{ numberType: { [Op.gt]: 10 } }, { stringType: { [Op.like]: 'foo%' } }] }] },
-            { [Op.and]: [{ [Op.and]: [{ numberType: { [Op.lt]: 20 } }, { stringType: { [Op.like]: '%bar' } }] }] },
+            {
+              [Op.and]: [
+                {
+                  [Op.and]: [
+                    { numberType: { [Op.gt]: 10 } },
+                    { stringType: { [Op.like]: "foo%" } },
+                  ],
+                },
+              ],
+            },
+            {
+              [Op.and]: [
+                {
+                  [Op.and]: [
+                    { numberType: { [Op.lt]: 20 } },
+                    { stringType: { [Op.like]: "%bar" } },
+                  ],
+                },
+              ],
+            },
           ],
-        },
+        }
       );
     });
 
-    it('should support nested ors', (): void => {
+    it("should support nested ors", (): void => {
       expectWhereQuery(
         {
           and: [
@@ -113,13 +137,13 @@ describe('WhereBuilder', (): void => {
               ],
             },
           ],
-        },
+        }
       );
     });
   });
 
-  describe('or', (): void => {
-    it('or multiple expressions together', (): void => {
+  describe("or", (): void => {
+    it("or multiple expressions together", (): void => {
       expectWhereQuery(
         {
           or: [
@@ -136,16 +160,16 @@ describe('WhereBuilder', (): void => {
             { [Op.and]: [{ numberType: { [Op.gte]: 30 } }] },
             { [Op.and]: [{ numberType: { [Op.lte]: 40 } }] },
           ],
-        },
+        }
       );
     });
 
-    it('and multiple and filters together', (): void => {
+    it("and multiple and filters together", (): void => {
       expectWhereQuery(
         {
           or: [
-            { numberType: { gt: 10 }, stringType: { like: 'foo%' } },
-            { numberType: { lt: 20 }, stringType: { like: '%bar' } },
+            { numberType: { gt: 10 }, stringType: { like: "foo%" } },
+            { numberType: { lt: 20 }, stringType: { like: "%bar" } },
           ],
         },
         {
@@ -153,23 +177,29 @@ describe('WhereBuilder', (): void => {
             {
               [Op.and]: [
                 {
-                  [Op.and]: [{ numberType: { [Op.gt]: 10 } }, { stringType: { [Op.like]: 'foo%' } }],
+                  [Op.and]: [
+                    { numberType: { [Op.gt]: 10 } },
+                    { stringType: { [Op.like]: "foo%" } },
+                  ],
                 },
               ],
             },
             {
               [Op.and]: [
                 {
-                  [Op.and]: [{ numberType: { [Op.lt]: 20 } }, { stringType: { [Op.like]: '%bar' } }],
+                  [Op.and]: [
+                    { numberType: { [Op.lt]: 20 } },
+                    { stringType: { [Op.like]: "%bar" } },
+                  ],
                 },
               ],
             },
           ],
-        },
+        }
       );
     });
 
-    it('should support nested ands', (): void => {
+    it("should support nested ands", (): void => {
       expectWhereQuery(
         {
           or: [
@@ -192,7 +222,7 @@ describe('WhereBuilder', (): void => {
               ],
             },
           ],
-        },
+        }
       );
     });
   });

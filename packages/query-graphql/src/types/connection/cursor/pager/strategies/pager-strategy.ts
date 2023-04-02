@@ -1,5 +1,5 @@
-import { Query, SortField } from '@nestjs-query/core';
-import { CursorPagingType } from '../../../../query';
+import { Query, SortField } from "@franka107-nestjs-query/core";
+import { CursorPagingType } from "../../../../query";
 
 export interface OffsetPagingOpts {
   offset: number;
@@ -15,7 +15,7 @@ export type KeySetField<DTO, K extends keyof DTO> = {
 };
 
 export type KeySetCursorPayload<DTO> = {
-  type: 'keyset';
+  type: "keyset";
   fields: KeySetField<DTO, keyof DTO>[];
 };
 
@@ -31,9 +31,18 @@ export interface KeySetPagingOpts<DTO> {
 export type CursorPagingOpts<DTO> = OffsetPagingOpts | KeySetPagingOpts<DTO>;
 
 export interface PagerStrategy<DTO> {
-  toCursor(dto: DTO, index: number, opts: CursorPagingOpts<DTO>, query: Query<DTO>): string;
+  toCursor(
+    dto: DTO,
+    index: number,
+    opts: CursorPagingOpts<DTO>,
+    query: Query<DTO>
+  ): string;
   fromCursorArgs(cursor: CursorPagingType): CursorPagingOpts<DTO>;
   isEmptyCursor(opts: CursorPagingOpts<DTO>): boolean;
-  createQuery<Q extends Query<DTO>>(query: Q, opts: CursorPagingOpts<DTO>, includeExtraNode: boolean): Q;
+  createQuery<Q extends Query<DTO>>(
+    query: Q,
+    opts: CursorPagingOpts<DTO>,
+    includeExtraNode: boolean
+  ): Q;
   checkForExtraNode(nodes: DTO[], opts: CursorPagingOpts<DTO>): DTO[];
 }

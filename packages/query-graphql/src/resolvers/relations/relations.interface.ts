@@ -1,16 +1,18 @@
-import { Class } from '@nestjs-query/core';
-import { Complexity } from '@nestjs/graphql';
-import { DTONamesOpts } from '../../common';
-import { ResolverMethodOpts } from '../../decorators';
-import { QueryArgsTypeOpts, ConnectionOptions } from '../../types';
+import { Class } from "@franka107-nestjs-query/core";
+import { Complexity } from "@nestjs/graphql";
+import { DTONamesOpts } from "../../common";
+import { ResolverMethodOpts } from "../../decorators";
+import { QueryArgsTypeOpts, ConnectionOptions } from "../../types";
 
-import { AuthorizerOptions } from '../../auth';
+import { AuthorizerOptions } from "../../auth";
 
 export type ReferencesKeys<DTO, Reference> = {
   [F in keyof Reference]?: keyof DTO;
 };
 
-export interface ResolverRelationReference<DTO, Reference> extends DTONamesOpts, ResolverMethodOpts {
+export interface ResolverRelationReference<DTO, Reference>
+  extends DTONamesOpts,
+    ResolverMethodOpts {
   /**
    * The class type of the relation.
    */
@@ -74,7 +76,7 @@ export type ResolverRelation<Relation> = {
 } & DTONamesOpts &
   ResolverMethodOpts &
   QueryArgsTypeOpts<Relation> &
-  Pick<ConnectionOptions, 'enableTotalCount'>;
+  Pick<ConnectionOptions, "enableTotalCount">;
 
 export type RelationTypeMap<RT> = Record<string, RT>;
 
@@ -90,4 +92,6 @@ export type RelationsOpts = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ReferencesOpts<DTO> = RelationTypeMap<ResolverRelationReference<DTO, any>>;
+export type ReferencesOpts<DTO> = RelationTypeMap<
+  ResolverRelationReference<DTO, any>
+>;

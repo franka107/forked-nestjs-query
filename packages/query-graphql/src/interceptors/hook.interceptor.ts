@@ -1,8 +1,14 @@
-import { Class } from '@nestjs-query/core';
-import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { getHookForType } from '../decorators';
-import { HookTypes, Hook, getHookToken } from '../hooks';
+import { Class } from "@franka107-nestjs-query/core";
+import {
+  CallHandler,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  NestInterceptor,
+} from "@nestjs/common";
+import { GqlExecutionContext } from "@nestjs/graphql";
+import { getHookForType } from "../decorators";
+import { HookTypes, Hook, getHookToken } from "../hooks";
 
 export type HookContext<H extends Hook<unknown>> = { hook?: H };
 
@@ -12,7 +18,10 @@ class DefaultHookInterceptor implements NestInterceptor {
   }
 }
 
-export function HookInterceptor(type: HookTypes, ...DTOClasses: Class<unknown>[]): Class<NestInterceptor> {
+export function HookInterceptor(
+  type: HookTypes,
+  ...DTOClasses: Class<unknown>[]
+): Class<NestInterceptor> {
   const HookedClass = DTOClasses.find((Cls) => getHookForType(type, Cls));
   if (!HookedClass) {
     return DefaultHookInterceptor;
@@ -29,7 +38,7 @@ export function HookInterceptor(type: HookTypes, ...DTOClasses: Class<unknown>[]
       return next.handle();
     }
   }
-  Object.defineProperty(Interceptor, 'name', {
+  Object.defineProperty(Interceptor, "name", {
     writable: false,
     // set a unique name otherwise DI does not inject a unique one for each request
     value: `${DTOClasses[0].name}${type}HookInterceptor`,

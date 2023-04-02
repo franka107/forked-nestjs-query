@@ -1,5 +1,7 @@
-import { Class } from '@nestjs-query/core';
-import { HookTypes } from './types';
+import { Class } from "@franka107-nestjs-query/core";
+import { HookTypes } from "./types";
 
-export const getHookToken = <DTO>(hookType: HookTypes, DTOClass: Class<DTO>): string =>
-  `${DTOClass.name}${hookType}Hook`;
+export const getHookToken = <DTO>(
+  hookType: HookTypes,
+  DTOClass: Class<DTO>
+): string => `${DTOClass.name}${hookType}Hook`;

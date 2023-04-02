@@ -1,12 +1,12 @@
-import { Class, Filter, Query, SortField } from '@nestjs-query/core';
-import { PagingStrategies, InferPagingTypeFromStrategy } from '../paging';
-import { FilterTypeOptions } from '../filter.type';
+import { Class, Filter, Query, SortField } from "@franka107-nestjs-query/core";
+import { PagingStrategies, InferPagingTypeFromStrategy } from "../paging";
+import { FilterTypeOptions } from "../filter.type";
 import {
   ArrayConnectionOptions,
   CursorConnectionOptions,
   OffsetConnectionOptions,
   StaticConnectionType,
-} from '../../connection';
+} from "../../connection";
 
 export type BaseQueryArgsTypeOpts<DTO> = {
   /**
@@ -31,15 +31,21 @@ export type BaseQueryArgsTypeOpts<DTO> = {
   defaultFilter?: Filter<DTO>;
 } & FilterTypeOptions;
 
-export interface CursorQueryArgsTypeOpts<DTO> extends BaseQueryArgsTypeOpts<DTO>, CursorConnectionOptions {
+export interface CursorQueryArgsTypeOpts<DTO>
+  extends BaseQueryArgsTypeOpts<DTO>,
+    CursorConnectionOptions {
   pagingStrategy?: PagingStrategies.CURSOR;
 }
 
-export interface OffsetQueryArgsTypeOpts<DTO> extends BaseQueryArgsTypeOpts<DTO>, OffsetConnectionOptions {
+export interface OffsetQueryArgsTypeOpts<DTO>
+  extends BaseQueryArgsTypeOpts<DTO>,
+    OffsetConnectionOptions {
   pagingStrategy: PagingStrategies.OFFSET;
 }
 
-export interface NonePagingQueryArgsTypeOpts<DTO> extends BaseQueryArgsTypeOpts<DTO>, ArrayConnectionOptions {
+export interface NonePagingQueryArgsTypeOpts<DTO>
+  extends BaseQueryArgsTypeOpts<DTO>,
+    ArrayConnectionOptions {
   pagingStrategy: PagingStrategies.NONE;
 }
 
@@ -48,13 +54,15 @@ export type QueryArgsTypeOpts<DTO> =
   | OffsetQueryArgsTypeOpts<DTO>
   | NonePagingQueryArgsTypeOpts<DTO>;
 
-export interface StaticQueryType<DTO, PS extends PagingStrategies> extends Class<QueryType<DTO, PS>> {
+export interface StaticQueryType<DTO, PS extends PagingStrategies>
+  extends Class<QueryType<DTO, PS>> {
   SortType: Class<SortField<DTO>>;
   PageType: Class<InferPagingTypeFromStrategy<PS>>;
   FilterType: Class<Filter<DTO>>;
   ConnectionType: StaticConnectionType<DTO, PS>;
 }
 
-export interface QueryType<DTO, PS extends PagingStrategies> extends Query<DTO> {
+export interface QueryType<DTO, PS extends PagingStrategies>
+  extends Query<DTO> {
   paging?: InferPagingTypeFromStrategy<PS>;
 }

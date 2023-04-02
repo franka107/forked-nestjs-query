@@ -11,13 +11,13 @@ import {
   GetByIdOptions,
   UpdateOneOptions,
   DeleteOneOptions,
-} from '@nestjs-query/core';
-import lodashPick from 'lodash.pick';
-import { Model, ModelCtor } from 'sequelize-typescript';
-import { WhereOptions } from 'sequelize';
-import { NotFoundException } from '@nestjs/common';
-import { FilterQueryBuilder, AggregateBuilder } from '../query';
-import { RelationQueryService } from './relation-query.service';
+} from "@franka107-nestjs-query/core";
+import lodashPick from "lodash.pick";
+import { Model, ModelCtor } from "sequelize-typescript";
+import { WhereOptions } from "sequelize";
+import { NotFoundException } from "@nestjs/common";
+import { FilterQueryBuilder, AggregateBuilder } from "../query";
+import { RelationQueryService } from "./relation-query.service";
 
 /**
  * Base class for all query services that use a `sequelize` Model.
@@ -35,7 +35,9 @@ import { RelationQueryService } from './relation-query.service';
  * }
  * ```
  */
-export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>>
+export class SequelizeQueryService<
+    Entity extends Model<Entity, Partial<Entity>>
+  >
   extends RelationQueryService<Entity>
   implements QueryService<Entity, DeepPartial<Entity>, DeepPartial<Entity>>
 {
@@ -47,7 +49,7 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
   }
 
   /**
-   * Query for multiple entities, using a Query from `@nestjs-query/core`.
+   * Query for multiple entities, using a Query from `@franka107-nestjs-query/core`.
    *
    * @example
    * ```ts
@@ -60,15 +62,24 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param query - The Query used to filter, page, and sort rows.
    */
   async query(query: Query<Entity>): Promise<Entity[]> {
-    return this.model.findAll<Entity>(this.filterQueryBuilder.findOptions(query));
+    return this.model.findAll<Entity>(
+      this.filterQueryBuilder.findOptions(query)
+    );
   }
 
-  async aggregate(filter: Filter<Entity>, aggregate: AggregateQuery<Entity>): Promise<AggregateResponse<Entity>[]> {
-    const result = await this.model.findAll(this.filterQueryBuilder.aggregateOptions({ filter }, aggregate));
+  async aggregate(
+    filter: Filter<Entity>,
+    aggregate: AggregateQuery<Entity>
+  ): Promise<AggregateResponse<Entity>[]> {
+    const result = await this.model.findAll(
+      this.filterQueryBuilder.aggregateOptions({ filter }, aggregate)
+    );
     if (!result) {
       return [{}];
     }
-    return AggregateBuilder.convertToAggregateResponse(result as unknown as Record<string, unknown>[]);
+    return AggregateBuilder.convertToAggregateResponse(
+      result as unknown as Record<string, unknown>[]
+    );
   }
 
   async count(filter: Filter<Entity>): Promise<number> {
@@ -85,8 +96,13 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param id - The id of the record to find.
    * @param opts - Additional options
    */
-  async findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<Entity | undefined> {
-    const model = await this.model.findOne<Entity>(this.filterQueryBuilder.findByIdOptions(id, opts ?? {}));
+  async findById(
+    id: string | number,
+    opts?: FindByIdOptions<Entity>
+  ): Promise<Entity | undefined> {
+    const model = await this.model.findOne<Entity>(
+      this.filterQueryBuilder.findByIdOptions(id, opts ?? {})
+    );
     if (!model) {
       return undefined;
     }
@@ -107,10 +123,15 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param id - The id of the record to find.
    * @param opts - Additional options
    */
-  async getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<Entity> {
+  async getById(
+    id: string | number,
+    opts?: GetByIdOptions<Entity>
+  ): Promise<Entity> {
     const entity = await this.findById(id, opts ?? {});
     if (!entity) {
-      throw new NotFoundException(`Unable to find ${this.model.name} with id: ${id}`);
+      throw new NotFoundException(
+        `Unable to find ${this.model.name} with id: ${id}`
+      );
     }
     return entity;
   }
@@ -143,7 +164,9 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    */
   async createMany(records: DeepPartial<Entity>[]): Promise<Entity[]> {
     await Promise.all(records.map((r) => this.ensureEntityDoesNotExist(r)));
-    return this.model.bulkCreate<Entity>(records.map((r) => this.getChangedValues(r)));
+    return this.model.bulkCreate<Entity>(
+      records.map((r) => this.getChangedValues(r))
+    );
   }
 
   /**
@@ -157,14 +180,18 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param update - A `Partial` of the entity with fields to update.
    * @param opts - Additional options.
    */
-  async updateOne(id: number | string, update: DeepPartial<Entity>, opts?: UpdateOneOptions<Entity>): Promise<Entity> {
+  async updateOne(
+    id: number | string,
+    update: DeepPartial<Entity>,
+    opts?: UpdateOneOptions<Entity>
+  ): Promise<Entity> {
     this.ensureIdIsNotPresent(update);
     const entity = await this.getById(id, opts);
     return entity.update(this.getChangedValues(update));
   }
 
   /**
-   * Update multiple entities with a `@nestjs-query/core` Filter.
+   * Update multiple entities with a `@franka107-nestjs-query/core` Filter.
    *
    * @example
    * ```ts
@@ -176,11 +203,14 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param update - A `Partial` of entity with the fields to update
    * @param filter - A Filter used to find the records to update
    */
-  async updateMany(update: DeepPartial<Entity>, filter: Filter<Entity>): Promise<UpdateManyResponse> {
+  async updateMany(
+    update: DeepPartial<Entity>,
+    filter: Filter<Entity>
+  ): Promise<UpdateManyResponse> {
     this.ensureIdIsNotPresent(update);
     const [count] = await this.model.update(
       this.getChangedValues(update),
-      this.filterQueryBuilder.updateOptions({ filter }),
+      this.filterQueryBuilder.updateOptions({ filter })
     );
     return { updatedCount: count };
   }
@@ -197,14 +227,17 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param id - The `id` of the entity to delete.
    * @param opts - Additional options.
    */
-  async deleteOne(id: string | number, opts?: DeleteOneOptions<Entity>): Promise<Entity> {
+  async deleteOne(
+    id: string | number,
+    opts?: DeleteOneOptions<Entity>
+  ): Promise<Entity> {
     const entity = await this.getById(id, opts);
     await entity.destroy();
     return entity;
   }
 
   /**
-   * Delete multiple records with a `@nestjs-query/core` `Filter`.
+   * Delete multiple records with a `@franka107-nestjs-query/core` `Filter`.
    *
    * @example
    *
@@ -217,7 +250,9 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
    * @param filter - A `Filter` to find records to delete.
    */
   async deleteMany(filter: Filter<Entity>): Promise<DeleteManyResponse> {
-    const deletedCount = await this.model.destroy(this.filterQueryBuilder.destroyOptions({ filter }));
+    const deletedCount = await this.model.destroy(
+      this.filterQueryBuilder.destroyOptions({ filter })
+    );
     return { deletedCount: deletedCount || 0 };
   }
 
@@ -235,19 +270,21 @@ export class SequelizeQueryService<Entity extends Model<Entity, Partial<Entity>>
     return record;
   }
 
-  private async ensureEntityDoesNotExist(e: DeepPartial<Entity>): Promise<void> {
+  private async ensureEntityDoesNotExist(
+    e: DeepPartial<Entity>
+  ): Promise<void> {
     const pks = this.primaryKeyValues(e);
     if (Object.keys(pks).length) {
       const found = await this.model.findOne({ where: pks });
       if (found) {
-        throw new Error('Entity already exists');
+        throw new Error("Entity already exists");
       }
     }
   }
 
   private ensureIdIsNotPresent(e: DeepPartial<Entity>): void {
     if (Object.keys(this.primaryKeyValues(e)).length) {
-      throw new Error('Id cannot be specified when updating');
+      throw new Error("Id cannot be specified when updating");
     }
   }
 

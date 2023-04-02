@@ -3,28 +3,50 @@
  * @packageDocumentation
  */
 // eslint-disable-next-line max-classes-per-file
-import { Class, DeepPartial, Filter, QueryService } from '@nestjs-query/core';
-import { Args, ArgsType, InputType, PartialType, Resolver } from '@nestjs/graphql';
-import omit from 'lodash.omit';
-import { HookTypes } from '../hooks';
-import { DTONames, getDTONames } from '../common';
-import { AuthorizerFilter, MutationHookArgs, ResolverMutation, ResolverSubscription } from '../decorators';
-import { AuthorizerInterceptor, HookInterceptor } from '../interceptors';
-import { EventType, getDTOEventName } from '../subscription';
+import {
+  Class,
+  DeepPartial,
+  Filter,
+  QueryService,
+} from "@franka107-nestjs-query/core";
+import {
+  Args,
+  ArgsType,
+  InputType,
+  PartialType,
+  Resolver,
+} from "@nestjs/graphql";
+import omit from "lodash.omit";
+import { HookTypes } from "../hooks";
+import { DTONames, getDTONames } from "../common";
+import {
+  AuthorizerFilter,
+  MutationHookArgs,
+  ResolverMutation,
+  ResolverSubscription,
+} from "../decorators";
+import { AuthorizerInterceptor, HookInterceptor } from "../interceptors";
+import { EventType, getDTOEventName } from "../subscription";
 import {
   CreateManyInputType,
   CreateOneInputType,
   MutationArgsType,
   SubscriptionArgsType,
   SubscriptionFilterInputType,
-} from '../types';
-import { createSubscriptionFilter, getSubscriptionEventName } from './helpers';
-import { BaseServiceResolver, ResolverClass, ServiceResolver, SubscriptionResolverOpts } from './resolver.interface';
-import { OperationGroup } from '../auth';
+} from "../types";
+import { createSubscriptionFilter, getSubscriptionEventName } from "./helpers";
+import {
+  BaseServiceResolver,
+  ResolverClass,
+  ServiceResolver,
+  SubscriptionResolverOpts,
+} from "./resolver.interface";
+import { OperationGroup } from "../auth";
 
 export type CreatedEvent<DTO> = { [eventName: string]: DTO };
 
-export interface CreateResolverOpts<DTO, C = DeepPartial<DTO>> extends SubscriptionResolverOpts {
+export interface CreateResolverOpts<DTO, C = DeepPartial<DTO>>
+  extends SubscriptionResolverOpts {
   /**
    * The Input DTO that should be used to create records.
    */
@@ -42,19 +64,32 @@ export interface CreateResolverOpts<DTO, C = DeepPartial<DTO>> extends Subscript
   createManyMutationName?: string;
 }
 
-export interface CreateResolver<DTO, C, QS extends QueryService<DTO, C, unknown>> extends ServiceResolver<DTO, QS> {
-  createOne(input: MutationArgsType<CreateOneInputType<C>>, authorizeFilter?: Filter<DTO>): Promise<DTO>;
+export interface CreateResolver<
+  DTO,
+  C,
+  QS extends QueryService<DTO, C, unknown>
+> extends ServiceResolver<DTO, QS> {
+  createOne(
+    input: MutationArgsType<CreateOneInputType<C>>,
+    authorizeFilter?: Filter<DTO>
+  ): Promise<DTO>;
 
-  createMany(input: MutationArgsType<CreateManyInputType<C>>, authorizeFilter?: Filter<DTO>): Promise<DTO[]>;
+  createMany(
+    input: MutationArgsType<CreateManyInputType<C>>,
+    authorizeFilter?: Filter<DTO>
+  ): Promise<DTO[]>;
 
   createdSubscription(
     input?: SubscriptionArgsType<DTO>,
-    authorizeFilter?: Filter<DTO>,
+    authorizeFilter?: Filter<DTO>
   ): AsyncIterator<CreatedEvent<DTO>>;
 }
 
 /** @internal */
-const defaultCreateDTO = <DTO, C>(dtoNames: DTONames, DTOClass: Class<DTO>): Class<C> => {
+const defaultCreateDTO = <DTO, C>(
+  dtoNames: DTONames,
+  DTOClass: Class<DTO>
+): Class<C> => {
   @InputType(`Create${dtoNames.baseName}`)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -64,7 +99,10 @@ const defaultCreateDTO = <DTO, C>(dtoNames: DTONames, DTOClass: Class<DTO>): Cla
 };
 
 /** @internal */
-const defaultCreateOneInput = <C>(dtoNames: DTONames, InputDTO: Class<C>): Class<CreateOneInputType<C>> => {
+const defaultCreateOneInput = <C>(
+  dtoNames: DTONames,
+  InputDTO: Class<C>
+): Class<CreateOneInputType<C>> => {
   const { baseName, baseNameLower } = dtoNames;
   @InputType(`CreateOne${baseName}Input`)
   class CO extends CreateOneInputType(baseNameLower, InputDTO) {}
@@ -72,7 +110,10 @@ const defaultCreateOneInput = <C>(dtoNames: DTONames, InputDTO: Class<C>): Class
 };
 
 /** @internal */
-const defaultCreateManyInput = <C>(dtoNames: DTONames, InputDTO: Class<C>): Class<CreateManyInputType<C>> => {
+const defaultCreateManyInput = <C>(
+  dtoNames: DTONames,
+  InputDTO: Class<C>
+): Class<CreateManyInputType<C>> => {
   const { pluralBaseName, pluralBaseNameLower } = dtoNames;
   @InputType(`CreateMany${pluralBaseName}Input`)
   class CM extends CreateManyInputType(pluralBaseNameLower, InputDTO) {}
@@ -84,13 +125,20 @@ const defaultCreateManyInput = <C>(dtoNames: DTONames, InputDTO: Class<C>): Clas
  * Mixin to add `create` graphql endpoints.
  */
 export const Creatable =
-  <DTO, C, QS extends QueryService<DTO, C, unknown>>(DTOClass: Class<DTO>, opts: CreateResolverOpts<DTO, C>) =>
-  <B extends Class<ServiceResolver<DTO, QS>>>(BaseClass: B): Class<CreateResolver<DTO, C, QS>> & B => {
+  <DTO, C, QS extends QueryService<DTO, C, unknown>>(
+    DTOClass: Class<DTO>,
+    opts: CreateResolverOpts<DTO, C>
+  ) =>
+  <B extends Class<ServiceResolver<DTO, QS>>>(
+    BaseClass: B
+  ): Class<CreateResolver<DTO, C, QS>> & B => {
     const dtoNames = getDTONames(DTOClass, opts);
     const { baseName, pluralBaseName } = dtoNames;
     const enableSubscriptions = opts.enableSubscriptions === true;
-    const enableOneSubscriptions = opts.one?.enableSubscriptions ?? enableSubscriptions;
-    const enableManySubscriptions = opts.many?.enableSubscriptions ?? enableSubscriptions;
+    const enableOneSubscriptions =
+      opts.one?.enableSubscriptions ?? enableSubscriptions;
+    const enableManySubscriptions =
+      opts.many?.enableSubscriptions ?? enableSubscriptions;
     const createdEvent = getDTOEventName(EventType.CREATED, DTOClass);
     const {
       CreateDTOClass = defaultCreateDTO(dtoNames, DTOClass),
@@ -98,15 +146,16 @@ export const Creatable =
       CreateManyInput = defaultCreateManyInput(dtoNames, CreateDTOClass),
     } = opts;
     const createOneMutationName = opts.one?.name ?? `createOne${baseName}`;
-    const createManyMutationName = opts.many?.name ?? `createMany${pluralBaseName}`;
+    const createManyMutationName =
+      opts.many?.name ?? `createMany${pluralBaseName}`;
     const commonResolverOpts = omit(
       opts,
-      'dtoName',
-      'one',
-      'many',
-      'CreateDTOClass',
-      'CreateOneInput',
-      'CreateManyInput',
+      "dtoName",
+      "one",
+      "many",
+      "CreateDTOClass",
+      "CreateOneInput",
+      "CreateManyInput"
     );
 
     @ArgsType()
@@ -132,11 +181,15 @@ export const Creatable =
         commonResolverOpts,
         {
           interceptors: [
-            HookInterceptor(HookTypes.BEFORE_CREATE_ONE, CreateDTOClass, DTOClass),
+            HookInterceptor(
+              HookTypes.BEFORE_CREATE_ONE,
+              CreateDTOClass,
+              DTOClass
+            ),
             AuthorizerInterceptor(DTOClass),
           ],
         },
-        opts.one ?? {},
+        opts.one ?? {}
       )
       async createOne(
         @MutationHookArgs() input: CO,
@@ -144,7 +197,7 @@ export const Creatable =
           operationGroup: OperationGroup.CREATE,
           many: false,
         }) // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        authorizeFilter?: Filter<DTO>,
+        authorizeFilter?: Filter<DTO>
       ): Promise<DTO> {
         // Ignore `authorizeFilter` for now but give users the ability to throw an UnauthorizedException
         const created = await this.service.createOne(input.input.input);
@@ -160,11 +213,15 @@ export const Creatable =
         { ...commonResolverOpts },
         {
           interceptors: [
-            HookInterceptor(HookTypes.BEFORE_CREATE_MANY, CreateDTOClass, DTOClass),
+            HookInterceptor(
+              HookTypes.BEFORE_CREATE_MANY,
+              CreateDTOClass,
+              DTOClass
+            ),
             AuthorizerInterceptor(DTOClass),
           ],
         },
-        opts.many ?? {},
+        opts.many ?? {}
       )
       async createMany(
         @MutationHookArgs() input: CM,
@@ -173,37 +230,60 @@ export const Creatable =
           operationGroup: OperationGroup.CREATE,
           many: true,
         }) // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        authorizeFilter?: Filter<DTO>,
+        authorizeFilter?: Filter<DTO>
       ): Promise<DTO[]> {
         // Ignore `authorizeFilter` for now but give users the ability to throw an UnauthorizedException
         const created = await this.service.createMany(input.input.input);
         if (enableManySubscriptions) {
-          await Promise.all(created.map((c) => this.publishCreatedEvent(c, authorizeFilter)));
+          await Promise.all(
+            created.map((c) => this.publishCreatedEvent(c, authorizeFilter))
+          );
         }
         return created;
       }
 
-      async publishCreatedEvent(dto: DTO, authorizeFilter?: Filter<DTO>): Promise<void> {
+      async publishCreatedEvent(
+        dto: DTO,
+        authorizeFilter?: Filter<DTO>
+      ): Promise<void> {
         if (this.pubSub) {
-          const eventName = getSubscriptionEventName(createdEvent, authorizeFilter);
+          const eventName = getSubscriptionEventName(
+            createdEvent,
+            authorizeFilter
+          );
           await this.pubSub.publish(eventName, { [createdEvent]: dto });
         }
       }
 
-      @ResolverSubscription(() => DTOClass, { name: createdEvent, filter: subscriptionFilter }, commonResolverOpts, {
-        enableSubscriptions: enableOneSubscriptions || enableManySubscriptions,
-        interceptors: [AuthorizerInterceptor(DTOClass)],
-      })
+      @ResolverSubscription(
+        () => DTOClass,
+        { name: createdEvent, filter: subscriptionFilter },
+        commonResolverOpts,
+        {
+          enableSubscriptions:
+            enableOneSubscriptions || enableManySubscriptions,
+          interceptors: [AuthorizerInterceptor(DTOClass)],
+        }
+      )
       createdSubscription(
         @Args() input?: SA,
-        @AuthorizerFilter({ operationGroup: OperationGroup.CREATE, many: false })
-        authorizeFilter?: Filter<DTO>,
+        @AuthorizerFilter({
+          operationGroup: OperationGroup.CREATE,
+          many: false,
+        })
+        authorizeFilter?: Filter<DTO>
       ): AsyncIterator<CreatedEvent<DTO>> {
-        if (!this.pubSub || !(enableManySubscriptions || enableOneSubscriptions)) {
+        if (
+          !this.pubSub ||
+          !(enableManySubscriptions || enableOneSubscriptions)
+        ) {
           throw new Error(`Unable to subscribe to ${createdEvent}`);
         }
 
-        const eventName = getSubscriptionEventName(createdEvent, authorizeFilter);
+        const eventName = getSubscriptionEventName(
+          createdEvent,
+          authorizeFilter
+        );
         return this.pubSub.asyncIterator<CreatedEvent<DTO>>(eventName);
       }
     }
@@ -234,8 +314,9 @@ export const Creatable =
 export const CreateResolver = <
   DTO,
   C = DeepPartial<DTO>,
-  QS extends QueryService<DTO, C, unknown> = QueryService<DTO, C, unknown>,
+  QS extends QueryService<DTO, C, unknown> = QueryService<DTO, C, unknown>
 >(
   DTOClass: Class<DTO>,
-  opts: CreateResolverOpts<DTO, C> = {},
-): ResolverClass<DTO, QS, CreateResolver<DTO, C, QS>> => Creatable(DTOClass, opts)(BaseServiceResolver);
+  opts: CreateResolverOpts<DTO, C> = {}
+): ResolverClass<DTO, QS, CreateResolver<DTO, C, QS>> =>
+  Creatable(DTOClass, opts)(BaseServiceResolver);

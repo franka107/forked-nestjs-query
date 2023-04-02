@@ -1,7 +1,7 @@
-import { Class } from '@nestjs-query/core';
-import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
-import { Field, InputType } from '@nestjs/graphql';
+import { Class } from "@franka107-nestjs-query/core";
+import { Type } from "class-transformer";
+import { ValidateNested } from "class-validator";
+import { Field, InputType } from "@nestjs/graphql";
 
 export interface CreateOneInputType<C> {
   input: C;
@@ -14,12 +14,18 @@ export interface CreateOneInputType<C> {
  * @param InputClass - The InputType to be used.
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
-export function CreateOneInputType<C>(fieldName: string, InputClass: Class<C>): Class<CreateOneInputType<C>> {
+export function CreateOneInputType<C>(
+  fieldName: string,
+  InputClass: Class<C>
+): Class<CreateOneInputType<C>> {
   @InputType({ isAbstract: true })
   class CreateOneInput implements CreateOneInputType<C> {
     @Type(() => InputClass)
     @ValidateNested()
-    @Field(() => InputClass, { description: 'The record to create', name: fieldName })
+    @Field(() => InputClass, {
+      description: "The record to create",
+      name: fieldName,
+    })
     input!: C;
 
     @Type(() => InputClass)

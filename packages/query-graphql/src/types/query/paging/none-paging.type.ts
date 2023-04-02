@@ -1,6 +1,6 @@
-import { Class } from '@nestjs-query/core';
-import { PagingStrategies } from './constants';
-import { NonePagingType } from './interfaces';
+import { Class } from "@franka107-nestjs-query/core";
+import { PagingStrategies } from "./constants";
+import { NonePagingType } from "./interfaces";
 
 let graphQLPaging: Class<NonePagingType> | null = null;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional

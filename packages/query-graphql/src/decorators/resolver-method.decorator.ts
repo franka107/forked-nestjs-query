@@ -9,8 +9,8 @@ import {
   UseInterceptors,
   UsePipes,
   applyDecorators,
-} from '@nestjs/common';
-import { Class } from '@nestjs-query/core';
+} from "@nestjs/common";
+import { Class } from "@franka107-nestjs-query/core";
 
 export interface BaseResolverOptions {
   /** An array of `nestjs` guards to apply to a graphql endpoint */
@@ -40,7 +40,9 @@ export interface ResolverMethodOpts extends BaseResolverOptions {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createSetArray<T>(...arrs: T[][]): T[] {
-  const set: Set<T> = new Set(arrs.reduce<T[]>((acc: T[], arr: T[]): T[] => [...acc, ...arr], []));
+  const set: Set<T> = new Set(
+    arrs.reduce<T[]>((acc: T[], arr: T[]): T[] => [...acc, ...arr], [])
+  );
   return [...set];
 }
 
@@ -61,10 +63,26 @@ export function isDisabled(opts: ResolverMethodOpts[]): boolean {
  */
 export function ResolverMethod(...opts: ResolverMethodOpts[]): MethodDecorator {
   return applyDecorators(
-    UseGuards(...createSetArray<Class<CanActivate> | CanActivate>(...opts.map((o) => o.guards ?? []))),
-    UseInterceptors(...createSetArray<Class<NestInterceptor>>(...opts.map((o) => o.interceptors ?? []))),
-    UsePipes(...createSetArray<Class<PipeTransform>>(...opts.map((o) => o.pipes ?? []))),
-    UseFilters(...createSetArray<Class<ExceptionFilter>>(...opts.map((o) => o.filters ?? []))),
-    ...createSetArray<PropertyDecorator | MethodDecorator>(...opts.map((o) => o.decorators ?? [])),
+    UseGuards(
+      ...createSetArray<Class<CanActivate> | CanActivate>(
+        ...opts.map((o) => o.guards ?? [])
+      )
+    ),
+    UseInterceptors(
+      ...createSetArray<Class<NestInterceptor>>(
+        ...opts.map((o) => o.interceptors ?? [])
+      )
+    ),
+    UsePipes(
+      ...createSetArray<Class<PipeTransform>>(...opts.map((o) => o.pipes ?? []))
+    ),
+    UseFilters(
+      ...createSetArray<Class<ExceptionFilter>>(
+        ...opts.map((o) => o.filters ?? [])
+      )
+    ),
+    ...createSetArray<PropertyDecorator | MethodDecorator>(
+      ...opts.map((o) => o.decorators ?? [])
+    )
   );
 }

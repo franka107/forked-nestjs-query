@@ -1,7 +1,7 @@
 {
   "name": "@franka107-nestjs-query/query-typeorm",
-  "version": "2.0.0",
-  "description": "Typeorm adapter for @nestjs-query/core",
+  "version": "2.0.1",
+  "description": "Typeorm adapter for @franka107-nestjs-query/core",
   "author": "doug-martin <doug@dougamartin.com>",
   "homepage": "https://github.com/doug-martin/nestjs-query#readme",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@nestjs-query/core": "^1.0.8",
+    "@franka107-nestjs-query/core": "^2.0.1",
     "camel-case": "^4.1.2",
     "lodash.filter": "^4.6.0",
     "lodash.merge": "^4.6.2",

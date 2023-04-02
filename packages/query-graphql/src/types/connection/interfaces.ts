@@ -1,7 +1,7 @@
-import { Class, Filter, Query } from '@nestjs-query/core';
-import { ReturnTypeFuncValue } from '@nestjs/graphql';
-import { ConnectionCursorType } from '../cursor.scalar';
-import { PagingStrategies } from '../query';
+import { Class, Filter, Query } from "@franka107-nestjs-query/core";
+import { ReturnTypeFuncValue } from "@nestjs/graphql";
+import { ConnectionCursorType } from "../cursor.scalar";
+import { PagingStrategies } from "../query";
 
 interface BaseConnectionOptions {
   enableTotalCount?: boolean;
@@ -20,7 +20,10 @@ export interface OffsetConnectionOptions extends BaseConnectionOptions {
 export interface ArrayConnectionOptions extends BaseConnectionOptions {
   pagingStrategy: PagingStrategies.NONE;
 }
-export type ConnectionOptions = CursorConnectionOptions | OffsetConnectionOptions | ArrayConnectionOptions;
+export type ConnectionOptions =
+  | CursorConnectionOptions
+  | OffsetConnectionOptions
+  | ArrayConnectionOptions;
 
 export interface EdgeType<DTO> {
   node: DTO;
@@ -53,9 +56,15 @@ export type OffsetConnectionType<DTO> = {
 
 export type ArrayConnectionType<DTO> = DTO[];
 
-export type ConnectionType<DTO> = OffsetConnectionType<DTO> | CursorConnectionType<DTO> | ArrayConnectionType<DTO>;
+export type ConnectionType<DTO> =
+  | OffsetConnectionType<DTO>
+  | CursorConnectionType<DTO>
+  | ArrayConnectionType<DTO>;
 
-export type InferConnectionTypeFromStrategy<DTO, S extends PagingStrategies> = S extends PagingStrategies.NONE
+export type InferConnectionTypeFromStrategy<
+  DTO,
+  S extends PagingStrategies
+> = S extends PagingStrategies.NONE
   ? ArrayConnectionType<DTO>
   : S extends PagingStrategies.OFFSET
   ? OffsetConnectionType<DTO>
@@ -73,7 +82,11 @@ export type PagerResult = {
 };
 
 export interface Pager<DTO, R extends PagerResult> {
-  page<Q extends Query<DTO>>(queryMany: QueryMany<DTO, Q>, query: Q, count: Count<DTO>): Promise<R>;
+  page<Q extends Query<DTO>>(
+    queryMany: QueryMany<DTO, Q>,
+    query: Q,
+    count: Count<DTO>
+  ): Promise<R>;
 }
 
 export interface StaticConnectionType<DTO, S extends PagingStrategies>
@@ -82,6 +95,6 @@ export interface StaticConnectionType<DTO, S extends PagingStrategies>
   createFromPromise<Q extends Query<DTO>>(
     queryMany: QueryMany<DTO, Q>,
     query: Q,
-    count?: Count<DTO>,
+    count?: Count<DTO>
   ): Promise<InferConnectionTypeFromStrategy<DTO, S>>;
 }

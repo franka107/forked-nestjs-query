@@ -1,5 +1,8 @@
-import { CommonFieldComparisonBetweenType, FilterComparisonOperators } from '@nestjs-query/core';
-import { Op, WhereOptions, Rangable } from 'sequelize';
+import {
+  CommonFieldComparisonBetweenType,
+  FilterComparisonOperators,
+} from "@franka107-nestjs-query/core";
+import { Op, WhereOptions, Rangable } from "sequelize";
 
 /**
  * @internal
@@ -34,7 +37,12 @@ export class SQLComparisonBuilder<Entity> {
     isnot: Op.not,
   };
 
-  constructor(readonly comparisonMap: Record<string, symbol> = SQLComparisonBuilder.DEFAULT_COMPARISON_MAP) {}
+  constructor(
+    readonly comparisonMap: Record<
+      string,
+      symbol
+    > = SQLComparisonBuilder.DEFAULT_COMPARISON_MAP
+  ) {}
 
   /**
    * Creates a valid SQL fragment with parameters.
@@ -47,7 +55,7 @@ export class SQLComparisonBuilder<Entity> {
     field: F,
     cmp: FilterComparisonOperators<Entity[F]>,
     val: EntityComparisonField<Entity, F>,
-    alias?: string,
+    alias?: string
   ): WhereOptions {
     const col = alias ? `$${alias}.${field as string}$` : `${field as string}`;
     const normalizedCmp = (cmp as string).toLowerCase();
@@ -55,11 +63,11 @@ export class SQLComparisonBuilder<Entity> {
       // comparison operator (e.b. =, !=, >, <)
       return { [col]: { [this.comparisonMap[normalizedCmp]]: val } };
     }
-    if (normalizedCmp === 'between') {
+    if (normalizedCmp === "between") {
       // between comparison (field BETWEEN x AND y)
       return this.betweenComparisonSQL(col, val);
     }
-    if (normalizedCmp === 'notbetween') {
+    if (normalizedCmp === "notbetween") {
       // notBetween comparison (field NOT BETWEEN x AND y)
       return this.notBetweenComparisonSQL(col, val);
     }
@@ -68,31 +76,46 @@ export class SQLComparisonBuilder<Entity> {
 
   private betweenComparisonSQL<F extends keyof Entity>(
     col: string,
-    val: EntityComparisonField<Entity, F>,
+    val: EntityComparisonField<Entity, F>
   ): WhereOptions {
     if (this.isBetweenVal(val)) {
       return {
         [col]: { [Op.between]: [val.lower, val.upper] as unknown as Rangable },
       };
     }
-    throw new Error(`Invalid value for between expected {lower: val, upper: val} got ${JSON.stringify(val)}`);
+    throw new Error(
+      `Invalid value for between expected {lower: val, upper: val} got ${JSON.stringify(
+        val
+      )}`
+    );
   }
 
   private notBetweenComparisonSQL<F extends keyof Entity>(
     col: string,
-    val: EntityComparisonField<Entity, F>,
+    val: EntityComparisonField<Entity, F>
   ): WhereOptions {
     if (this.isBetweenVal(val)) {
       return {
-        [col]: { [Op.notBetween]: [val.lower, val.upper] as unknown as Rangable },
+        [col]: {
+          [Op.notBetween]: [val.lower, val.upper] as unknown as Rangable,
+        },
       };
     }
-    throw new Error(`Invalid value for not between expected {lower: val, upper: val} got ${JSON.stringify(val)}`);
+    throw new Error(
+      `Invalid value for not between expected {lower: val, upper: val} got ${JSON.stringify(
+        val
+      )}`
+    );
   }
 
   private isBetweenVal<F extends keyof Entity>(
-    val: EntityComparisonField<Entity, F>,
+    val: EntityComparisonField<Entity, F>
   ): val is CommonFieldComparisonBetweenType<Entity[F]> {
-    return val !== null && typeof val === 'object' && 'lower' in val && 'upper' in val;
+    return (
+      val !== null &&
+      typeof val === "object" &&
+      "lower" in val &&
+      "upper" in val
+    );
   }
 }

@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
-import { SortDirection } from '@nestjs-query/core';
+import { SortDirection } from "@franka107-nestjs-query/core";
 import {
   Args,
   ArgsType,
@@ -11,22 +11,28 @@ import {
   ObjectType,
   Query,
   Resolver,
-} from '@nestjs/graphql';
-import { plainToClass } from 'class-transformer';
-import { validateSync } from 'class-validator';
-import { CursorQueryArgsType, FilterableField, PagingStrategies, QueryArgsType, QueryOptions } from '../../../src';
-import { generateSchema } from '../../__fixtures__';
+} from "@nestjs/graphql";
+import { plainToClass } from "class-transformer";
+import { validateSync } from "class-validator";
+import {
+  CursorQueryArgsType,
+  FilterableField,
+  PagingStrategies,
+  QueryArgsType,
+  QueryOptions,
+} from "../../../src";
+import { generateSchema } from "../../__fixtures__";
 
-describe('Offset paging strategy QueryArgsType with decorator options', (): void => {
+describe("Offset paging strategy QueryArgsType with decorator options", (): void => {
   afterEach(() => jest.clearAllMocks());
 
-  @ObjectType('TestQuery')
+  @ObjectType("TestQuery")
   @QueryOptions({
     pagingStrategy: PagingStrategies.OFFSET,
     defaultResultSize: 2,
     maxResultsSize: 5,
     defaultFilter: { booleanField: { is: true } },
-    defaultSort: [{ field: 'booleanField', direction: SortDirection.DESC }],
+    defaultSort: [{ field: "booleanField", direction: SortDirection.DESC }],
   })
   class TestDto {
     @FilterableField(() => ID)
@@ -81,20 +87,22 @@ describe('Offset paging strategy QueryArgsType with decorator options', (): void
   @ArgsType()
   class OffsetQueryOptionsArgs extends QueryArgsType(TestDto) {}
 
-  it('allow apply the options to the generated SDL', async () => {
+  it("allow apply the options to the generated SDL", async () => {
     @Resolver()
     class TestOffsetQueryOptionsDecoratorResolver {
       @Query(() => String)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       test(@Args() query: OffsetQueryOptionsArgs): string {
-        return 'hello';
+        return "hello";
       }
     }
-    const schema = await generateSchema([TestOffsetQueryOptionsDecoratorResolver]);
+    const schema = await generateSchema([
+      TestOffsetQueryOptionsDecoratorResolver,
+    ]);
     expect(schema).toMatchSnapshot();
   });
 
-  it('should validate a maxResultsSize for paging.limit', () => {
+  it("should validate a maxResultsSize for paging.limit", () => {
     const queryObj: CursorQueryArgsType<TestDto> = {
       paging: { limit: 10 },
     };
@@ -103,9 +111,9 @@ describe('Offset paging strategy QueryArgsType with decorator options', (): void
       {
         children: [],
         constraints: {
-          PropertyMax: 'Field paging.limit max allowed value is `5`.',
+          PropertyMax: "Field paging.limit max allowed value is `5`.",
         },
-        property: 'paging',
+        property: "paging",
         target: queryObj,
         value: queryObj.paging,
       },

@@ -1,6 +1,6 @@
-import { Query } from '@nestjs-query/core';
-import { CursorPagingOpts } from './strategies';
-import { CursorConnectionType, PagerResult } from '../../interfaces';
+import { Query } from "@franka107-nestjs-query/core";
+import { CursorPagingOpts } from "./strategies";
+import { CursorConnectionType, PagerResult } from "../../interfaces";
 
 export interface PagingMeta<DTO, Opts extends CursorPagingOpts<DTO>> {
   opts: Opts;
@@ -12,4 +12,5 @@ export interface QueryResults<DTO> {
   hasExtraNode: boolean;
 }
 
-export type CursorPagerResult<DTO> = PagerResult & Omit<CursorConnectionType<DTO>, 'totalCount'>;
+export type CursorPagerResult<DTO> = PagerResult &
+  Omit<CursorConnectionType<DTO>, "totalCount">;
