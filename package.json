@@ -18,6 +18,7 @@
   "dependencies": {
     "@s-ui/mono": "^2.34.0"
   },
+  "repository": "https://github.com/franka107/forked-nestjs-query",
   "devDependencies": {
     "lerna": "^6.6.1",
     "ts-mockito": "^2.6.1",
